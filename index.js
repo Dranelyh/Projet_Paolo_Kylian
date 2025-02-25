@@ -1,6 +1,7 @@
 let filteredClass = [];
 let filteredMana = [];
 let filteredRarity = [];
+let filteredType = [];
 let allCards = [];  
 
 // Fonction pour récupérer les cartes depuis l'API
@@ -29,6 +30,7 @@ async function fetchCards() {
         fetchClass(allCards);
         fetchMana(allCards);
         fetchRarity(allCards);
+        fetchType(allCards);
 
     } catch (error) {
         console.error(error);
@@ -151,11 +153,38 @@ function fetchRarity(cards) {
     });
 }
 
+function fetchType(cards) {
+
+    const selectType = document.getElementById("type-select");
+    
+    //récupère les différentes classes en exluant les non définis
+    const types = [...new Set(cards.map(card => card.type).filter(Boolean))].sort();
+
+    types.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type.charAt(0) + type.slice(1).toLowerCase();
+        selectType.appendChild(option);
+    })
+
+    selectType.addEventListener("change", async (event) => {
+        const selectedType = event.target.value;
+
+        if (selectedType === "all") {
+            filteredType = allCards;
+        } else {
+            filteredType = allCards.filter(card => card.type === selectedType);
+        }
+        updateDisplay();
+    });
+}
+
 function updateDisplay() {
     // Calculer l'intersection des filtres
     const intersection = filteredClass
         .filter(card => filteredMana.includes(card))
-        .filter(card => filteredRarity.includes(card));
+        .filter(card => filteredRarity.includes(card))
+        .filter(card => filteredType.includes(card));
 
     // Afficher l'intersection
     displayCards(intersection);
