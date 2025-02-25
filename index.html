@@ -16,30 +16,57 @@
     <h1>Hearthstone</h1>
   </header>
 
-  <div class="tabs">
-    <button class="tab-button active" data-tab="1">Accueil</button>
-    <button class="tab-button" data-tab="2">Classes et Héros</button>
-    <button class="tab-button" data-tab="3">Cartes</button>
-    <button class="tab-button" data-tab="4">Dos de cartes</button>
+  <div class="onglets">
+    <button class="onglet-button active" data-onglet="1">Accueil</button>
+    <button class="onglet-button" data-onglet="2">Classes et Héros</button>
+    <button class="onglet-button" data-onglet="3">Cartes</button>
+    <button class="onglet-button" data-onglet="4">Dos de cartes</button>
   </div>
 
-  <div class="tab-content active" id="tab-1">
+  <div class="onglet-content active" id="onglet-1">
       <h2>Bienvenue sur Hearthstone</h2>
       <p>Découvrez l'univers du jeu de cartes de Blizzard !</p>
   </div>
-  <div class="tab-content" id="tab-2">
+
+  <div class="onglet-content" id="onglet-2">
     <h2>Les différentes classes et héros disponibles</h2>
-    <p>pine non</p>
   </div>
-  <div class="tab-content" id="tab-3">
+
+  <div class="onglet-content" id="onglet-3">
     <div class="container">
-      <h2>Les Cartes</h2>
+
+      <div class="selection">
+        
+        <div class="select">
+          <label>Classe :</label>
+          <select name = "Classe" id ="classe-select">
+            <option value = "all">All</options> 
+          </select>
+        </div>
+        
+        <div class="select">
+          <label>Coût en mana :</label>
+          <select name = "mana" id ="mana-select">
+            <option value = "all">Tout</options> 
+          </select>
+        </div>
+
+        <div class="select">
+          <label>Rareté :</label>
+          <select name = "rare" id ="rare-select">
+            <option value = "all">All</options> 
+          </select>
+        </div>
+
+      </div>
+
       <div id="cards-list"></div>
+
     </div>
   </div>
-  <div class="tab-content" id="tab-4">
+
+  <div class="onglet-content" id="onglet-4">
     <h2>Les dos de cartes</h2>
-    <p>pine non</p>
   </div>
 
 </body>

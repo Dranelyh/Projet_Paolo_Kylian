@@ -16,14 +16,14 @@ h1 {
 }
 
 /* Style des boutons d'onglets */
-.tabs {
+.onglets {
     display: flex;
     justify-content: space-evenly;
     background: #333;
     padding: 10px 0;
 }
 
-.tab-button {
+.onglet-button {
     background: none;
     border: none;
     color: white;
@@ -33,41 +33,57 @@ h1 {
     transition: background 0.3s;
 }
 
-.tab-button:hover, .tab-button.active {
+.onglet-button:hover, .onglet-button.active {
     background: #555;
 }
 
 /* Style du contenu des onglets */
-.tab-content {
+.onglet-content {
     display: none;
     padding: 20px;
     text-align: center;
 }
 
-.tab-content.active {
+.onglet-content.active {
     display: block;
 }
 
 .container {
-    width: 80%;
+    width: 95%;
     margin: 20px auto;
 }
 .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 10px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display : flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 2px;
+    overflow : hidden;
 }
+
+.card:hover {
+    transform: scale(1.3);
+}
+
 .card img {
-    max-width: 100px;
+    max-width: 200px;
     height: auto;
 }
-.card-title {
-    font-size: 18px;
-    font-weight: bold;
+
+#cards-list{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
-.card-description {
-    font-size: 14px;
+
+.selection {
+    display : flex;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    z-index: 1000;
+    padding : 10px;
+    justify-content: space-evenly;
 }
