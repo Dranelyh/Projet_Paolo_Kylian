@@ -1,7 +1,10 @@
-let filteredClass = [];
-let filteredMana = [];
-let filteredRarity = [];
-let filteredType = [];
+//Pour les cartes
+
+let filteredCardsClass = [];
+let filteredCardsMana = [];
+let filteredCardsRarity = [];
+let filteredCardsType = [];
+let filteredCardsRace = [];
 let allCards = [];  
 
 // Fonction pour récupérer les cartes depuis l'API
@@ -14,15 +17,32 @@ async function fetchCards() {
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération des données');
         }
-
-        // Convertir la réponse en JSON
-        const cards = await response.json();
         
-        allCards = cards.filter(card => card.type !== "HERO");
+        const cards = await response.json();
 
-        filteredClass = allCards;
-        filteredMana = allCards;
-        filteredRarity = allCards;
+        // Utilisation d'un Map pour s'assurer que chaque carte a un nom unique
+        const uniqueCardsMap = new Map();
+
+        cards.forEach(card => {
+            if (card.type !== "HERO" && !uniqueCardsMap.has(card.name)) {
+                uniqueCardsMap.set(card.name, card);
+            }
+        });
+
+        // Convertir en tableau unique de cartes
+        allCards = Array.from(uniqueCardsMap.values());
+
+        allCards.sort((a, b) => {
+            // Trier d'abord par coût en mana (ordre croissant)
+            if (a.cost !== b.cost) {
+                return a.cost - b.cost;
+            }
+        });
+
+        filteredCardsClass = allCards;
+        filteredCardsMana = allCards;
+        filteredCardsRarity = allCards;
+        filteredCardsRace = allCards;
 
         // Afficher les cartes dans la page
         displayCards(allCards);
@@ -31,6 +51,7 @@ async function fetchCards() {
         fetchMana(allCards);
         fetchRarity(allCards);
         fetchType(allCards);
+        fetchRace(allCards);
 
     } catch (error) {
         console.error(error);
@@ -93,9 +114,9 @@ function fetchClass(cards) {
         const selectedClasse = event.target.value;
 
         if (selectedClasse === "all") {
-            filteredClass = allCards;
+            filteredCardsClass = allCards;
         } else {
-            filteredClass = allCards.filter(card => card.cardClass === selectedClasse);
+            filteredCardsClass = allCards.filter(card => card.cardClass === selectedClasse);
         }
         updateDisplay();
     });
@@ -119,9 +140,9 @@ function fetchMana(cards) {
         const selectedMana = event.target.value;
 
         if (selectedMana === "all") {
-            filteredMana = allCards;
+            filteredCardsMana = allCards;
         } else {
-            filteredMana = allCards.filter(card => card.cost === parseInt(selectedMana));
+            filteredCardsMana = allCards.filter(card => card.cost === parseInt(selectedMana));
         }
         updateDisplay();
     });
@@ -145,9 +166,9 @@ function fetchRarity(cards) {
         const selectedRarity = event.target.value;
 
         if (selectedRarity === "all") {
-            filteredRarity = allCards;
+            filteredCardsRarity = allCards;
         } else {
-            filteredRarity = allCards.filter(card => card.rarity === selectedRarity);
+            filteredCardsRarity = allCards.filter(card => card.rarity === selectedRarity);
         }
         updateDisplay();
     });
@@ -171,23 +192,54 @@ function fetchType(cards) {
         const selectedType = event.target.value;
 
         if (selectedType === "all") {
-            filteredType = allCards;
+            filteredCardsType = allCards;
         } else {
-            filteredType = allCards.filter(card => card.type === selectedType);
+            filteredCardsType = allCards.filter(card => card.type === selectedType);
+        }
+        updateDisplay();
+    });
+}
+
+function fetchRace(cards) {
+
+    const selectRace = document.getElementById("race-select");
+    
+    //récupère les différentes classes en exluant les non définis
+    const races = [...new Set(cards.map(card => card.race).filter(Boolean))].sort();
+
+    races.forEach(race => {
+        const option = document.createElement("option");
+        option.value = race;
+        option.textContent = race.charAt(0) + race.slice(1).toLowerCase();
+        selectRace.appendChild(option);
+    })
+
+    selectRace.addEventListener("change", async (event) => {
+        const selectedRace = event.target.value;
+
+        if (selectedRace === "all") {
+            filteredCardsRace = allCards;
+        } else {
+            filteredCardsRace = allCards.filter(card => 
+                Array.isArray(card.races) && card.races.includes(selectedRace)
+            );
         }
         updateDisplay();
     });
 }
 
 function updateDisplay() {
-    // Calculer l'intersection des filtres
-    const intersection = filteredClass
-        .filter(card => filteredMana.includes(card))
-        .filter(card => filteredRarity.includes(card))
-        .filter(card => filteredType.includes(card));
+    // Calculer l'intersection des filtres en utilisant un Set pour éviter les doublons
+    const intersection = allCards.filter(card =>
+        filteredCardsClass.includes(card) &&
+        filteredCardsMana.includes(card) &&
+        filteredCardsRarity.includes(card) &&
+        filteredCardsType.includes(card) &&
+        filteredCardsRace.includes(card)
+    );
 
-    // Afficher l'intersection
-    displayCards(intersection);
+    // Afficher les cartes sans doublons
+    displayCards([...new Set(intersection)]);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
