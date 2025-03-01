@@ -18,7 +18,6 @@ async function fetchCards() {
         // L'URL de l'API pour récupérer les cartes collectibles
         const response = await fetch('https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json');
         
-        // Vérifier si la réponse est correcte (code 200)
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération des données.');
         }
@@ -37,8 +36,8 @@ async function fetchCards() {
         // Convertir en tableau unique de cartes
         allCards = Array.from(uniqueCardsMap.values());
 
+        // Trier d'abord par coût en mana (ordre croissant)
         allCards.sort((a, b) => {
-            // Trier d'abord par coût en mana (ordre croissant)
             if (a.cost !== b.cost) {
                 return a.cost - b.cost;
             }
@@ -64,43 +63,39 @@ async function fetchCards() {
     }
 }
 
-// Fonction pour afficher les cartes dans le DOM
+// Affichage  des cartes
 function displayCards(cards) {
     const cardsList = document.getElementById('cards-list');
-    cardsList.innerHTML = '';  // Effacer le contenu précédent
+    // Efface le contenu précédent
+    cardsList.innerHTML = '';  
 
     // Parcourir les cartes et créer un élément pour chaque carte
     cards.forEach(card => {
-
-        // Récupérer l'ID de la carte
         const cardId = card.id;
         
-        // Construire l'URL de l'image en utilisant l'ID de la carte et la résolution souhaitée
-        const imageUrl = `https://art.hearthstonejson.com/v1/render/latest/enUS/512x/${cardId}.png`; // Vous pouvez changer la résolution ici (512x ou 256x)
+        // Image des cartes sur une autre API, récupération via l'id de la carte
+        const imageUrl = `https://art.hearthstonejson.com/v1/render/latest/enUS/512x/${cardId}.png`;
         
-        // Créer un div pour chaque carte
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('card');
         
         // Ajouter l'image de la carte
         const cardImage = `<img src="${imageUrl}" alt="${card.name}">`;
         
-        // Ajouter les informations de la carte (nom, description, coût)
+        // Ajouter les informations de la carte
         const cardContent = `
             ${cardImage}
         `;
-        //<div class="card-title">${card.name}</div>
-        //<div class="card-description">${card.text ? card.text : 'Aucune description.'}</div>
-        //<div>Coût en mana : ${card.cost ? card.cost : 'N/A'}</div>
         
-        // Ajouter le contenu à l'élément cardDiv
         cardDiv.innerHTML = cardContent;
         
-        // Ajouter la carte à la liste
         cardsList.appendChild(cardDiv);
     });
 }
 
+//Les fonctions "fetch" pour les cartes
+
+//Permet de n'afficher que les cartes d'une certaine classe
 function fetchClass(cards) {
 
     const selectClass = document.getElementById("classe-select");
@@ -115,6 +110,7 @@ function fetchClass(cards) {
         selectClass.appendChild(option);
     })
 
+    //permet de n'afficher que les cartes d'une certaine classe
     selectClass.addEventListener("change", async (event) => {
         const selectedClasse = event.target.value;
 
@@ -127,11 +123,11 @@ function fetchClass(cards) {
     });
 }
 
+//Permet de n'afficher que les cartes ayant un certain coût en mana
 function fetchMana(cards) {
 
     const selectMana = document.getElementById("mana-select");
     
-    //récupère les différentes classes en exluant les non définis
     const manas = [...new Set(cards.map(card => card.cost).filter(cost => cost !== null && cost !== undefined))].sort((a, b) => a - b);
 
     manas.forEach(mana => {
@@ -153,11 +149,12 @@ function fetchMana(cards) {
     });
 }
 
+//Permet de n'afficher que les cartes d'une certaine rareté
 function fetchRarity(cards) {
 
     const selectRarity = document.getElementById("rare-select");
     
-    //récupère les différentes classes en excluant les non définis
+    //Raretés rangées par ordre de rareté croissante
     const rarete = ["FREE", "COMMON", "RARE", "EPIC", "LEGENDARY"];
 
     rarete.forEach(rare => {
@@ -179,6 +176,7 @@ function fetchRarity(cards) {
     });
 }
 
+//Permet de n'afficher qu'un certain type de cartes (sorts, serviteurs, armes...)
 function fetchType(cards) {
 
     const selectType = document.getElementById("type-select");
@@ -205,6 +203,7 @@ function fetchType(cards) {
     });
 }
 
+//Permet de n'afficher que les serviteurs d'une certaine race
 function fetchRace(cards) {
 
     const selectRace = document.getElementById("race-select");
@@ -233,6 +232,7 @@ function fetchRace(cards) {
     });
 }
 
+//Met à jour l'affichage des cartes
 function updateDisplay() {
     // Calculer l'intersection des filtres en utilisant un Set pour éviter les doublons
     const intersection = allCards.filter(card =>
@@ -247,30 +247,12 @@ function updateDisplay() {
     displayCards([...new Set(intersection)]);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".onglet-button");
-    const contents = document.querySelectorAll(".onglet-content");
-
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            // Supprime la classe active de tous les boutons et contenus
-            buttons.forEach(btn => btn.classList.remove("active"));
-            contents.forEach(content => content.classList.remove("active"));
-
-            // Active l'onglet cliqué
-            button.classList.add("active");
-            document.getElementById(`onglet-${button.dataset.onglet}`).classList.add("active");
-        });
-    });
-});
-
 // Fonction pour récupérer les héros depuis l'API
 async function fetchHeroes() {
     try {
-        // L'URL de l'API pour récupérer les héros collectibles
+
         const response = await fetch('https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json');
         
-        // Vérifier si la réponse est correcte (code 200)
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération des données.');
         }
@@ -301,6 +283,7 @@ async function fetchHeroes() {
     }
 }
 
+//Permet de n'afficher que les héros d'une certaine classe
 function fetchHeroClass(heroes) {
 
     const selectClass = document.getElementById("heroes-select");
@@ -327,7 +310,7 @@ function fetchHeroClass(heroes) {
     });
 }
 
-// Fonction pour afficher les héros dans le DOM
+// Fonction pour afficher les héros
 function displayHeroes(heroes) {
     const heroesList = document.getElementById('heroes-list');
     heroesList.innerHTML = '';  // Effacer le contenu précédent
@@ -335,28 +318,23 @@ function displayHeroes(heroes) {
     // Parcourir les héros et créer un élément pour chaque carte
     heroes.forEach(hero => {
 
-        // Récupérer l'ID du héros
         const heroId = hero.id;
         
-        // Construire l'URL de l'image en utilisant l'ID du héros et la résolution souhaitée
+        // Construire l'URL de l'image en utilisant l'ID du héros
         const imageUrl = `https://art.hearthstonejson.com/v1/render/latest/enUS/512x/${heroId}.png`; // Vous pouvez changer la résolution ici (512x ou 256x)
         
-        // Créer un div pour chaque héros
         const heroDiv = document.createElement('div');
         heroDiv.classList.add('hero');
         
-        // Ajouter l'image du héros
         const heroImage = `<img src="${imageUrl}" alt="${hero.name}">`;
         
-        // Ajouter les informations du héros
+        // Ajoute les informations du héros
         const heroContent = `
             ${heroImage}
         `;
         
-        // Ajouter le contenu à l'élément heroDiv
         heroDiv.innerHTML = heroContent;
         
-        // Ajouter le héros à la liste
         heroesList.appendChild(heroDiv);
     });
 }
@@ -369,7 +347,24 @@ function updateHeroDisplay() {
     displayHeroes([...new Set(intersection)]);
 }
 
-fetchCards();
+//Permet l'utilisation des différents onglets de façon dynamique
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".onglet-button");
+    const contents = document.querySelectorAll(".onglet-content");
 
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Supprime la classe active de tous les boutons et contenus
+            buttons.forEach(btn => btn.classList.remove("active"));
+            contents.forEach(content => content.classList.remove("active"));
+
+            // Active l'onglet cliqué
+            button.classList.add("active");
+            document.getElementById(`onglet-${button.dataset.onglet}`).classList.add("active");
+        });
+    });
+});
+
+fetchCards();
 fetchHeroes();
 

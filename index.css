@@ -16,7 +16,6 @@ h1 {
     font-size: 40px;
 }
 
-/* Style des boutons d'onglets */
 .onglets {
     display: flex;
     justify-content: space-evenly;
@@ -38,7 +37,6 @@ h1 {
     background: #555;
 }
 
-/* Style du contenu des onglets */
 .onglet-content {
     display: none;
     padding: 20px;
@@ -105,9 +103,9 @@ h1 {
     display : flex;
     position: sticky;
     top: 0;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 5px;
+    background: linear-gradient(135deg, #ffff86, #d28f15);
+    border: 5px solid #8e3f02;
+    border-radius: 3px;
     z-index: 1000;
     padding : 10px;
     justify-content: space-evenly;
