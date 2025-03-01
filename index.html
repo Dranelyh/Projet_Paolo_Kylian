@@ -13,7 +13,7 @@
 
 <body>
   <header>
-    <h1>Hearthstone</h1>
+    <img src="hs_logo.webp" alt="title">
   </header>
 
   <div class="onglets">
@@ -28,7 +28,22 @@
   </div>
 
   <div class="onglet-content" id="onglet-2">
-    <h2>Les différentes classes et héros disponibles</h2>
+    <div class="container">
+
+      <div class="selection">
+        
+        <div class="select">
+          <label>Classe :</label>
+          <select name = "HeroClasse" id ="heroes-select">
+            <option value = "all">All</options> 
+          </select>
+        </div>
+
+      </div>
+
+      <div id="heroes-list"></div>
+
+    </div>
   </div>
 
   <div class="onglet-content" id="onglet-3">

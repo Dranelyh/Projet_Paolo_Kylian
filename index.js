@@ -1,11 +1,16 @@
-//Pour les cartes
+//Variables pour les cartes
 
 let filteredCardsClass = [];
 let filteredCardsMana = [];
 let filteredCardsRarity = [];
 let filteredCardsType = [];
 let filteredCardsRace = [];
-let allCards = [];  
+let allCards = []; 
+
+//Variables pour les héros
+
+let filteredHeroesClass = [];
+let allHeroes = [];
 
 // Fonction pour récupérer les cartes depuis l'API
 async function fetchCards() {
@@ -15,7 +20,7 @@ async function fetchCards() {
         
         // Vérifier si la réponse est correcte (code 200)
         if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des données');
+            throw new Error('Erreur lors de la récupération des données.');
         }
         
         const cards = await response.json();
@@ -55,7 +60,7 @@ async function fetchCards() {
 
     } catch (error) {
         console.error(error);
-        alert('Une erreur est survenue lors de la récupération des données');
+        alert('Une erreur est survenue lors de la récupération des données.');
     }
 }
 
@@ -67,7 +72,7 @@ function displayCards(cards) {
     // Parcourir les cartes et créer un élément pour chaque carte
     cards.forEach(card => {
 
-        // Récupérer l'ID de la carte (ex : "EX1_001")
+        // Récupérer l'ID de la carte
         const cardId = card.id;
         
         // Construire l'URL de l'image en utilisant l'ID de la carte et la résolution souhaitée
@@ -152,7 +157,7 @@ function fetchRarity(cards) {
 
     const selectRarity = document.getElementById("rare-select");
     
-    //récupère les différentes classes en exluant les non définis
+    //récupère les différentes classes en excluant les non définis
     const rarete = ["FREE", "COMMON", "RARE", "EPIC", "LEGENDARY"];
 
     rarete.forEach(rare => {
@@ -178,7 +183,7 @@ function fetchType(cards) {
 
     const selectType = document.getElementById("type-select");
     
-    //récupère les différentes classes en exluant les non définis
+    //récupère les différentes classes en excluant les non définis
     const types = [...new Set(cards.map(card => card.type).filter(Boolean))].sort();
 
     types.forEach(type => {
@@ -204,7 +209,7 @@ function fetchRace(cards) {
 
     const selectRace = document.getElementById("race-select");
     
-    //récupère les différentes classes en exluant les non définis
+    //récupère les différentes classes en excluant les non définis
     const races = [...new Set(cards.map(card => card.race).filter(Boolean))].sort();
 
     races.forEach(race => {
@@ -259,4 +264,112 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Fonction pour récupérer les héros depuis l'API
+async function fetchHeroes() {
+    try {
+        // L'URL de l'API pour récupérer les héros collectibles
+        const response = await fetch('https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json');
+        
+        // Vérifier si la réponse est correcte (code 200)
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des données.');
+        }
+
+        const heroes = await response.json();
+
+        // Utilisation d'un Map pour s'assurer que chaque carte a un nom unique
+        const uniqueHeroesMap = new Map();
+
+        heroes.forEach(elt => {
+            if (elt.type === "HERO" && !uniqueHeroesMap.has(elt.name)) {
+                uniqueHeroesMap.set(elt.name, elt);
+            }
+        });
+
+        // Convertir en tableau unique de cartes
+        allHeroes = Array.from(uniqueHeroesMap.values());
+        
+
+        // Afficher les héros dans la page
+        displayHeroes(allHeroes);
+
+        fetchHeroClass(allHeroes);
+
+    } catch (error) {
+        console.error(error);
+        alert('Une erreur est survenue lors de la récupération des données.');
+    }
+}
+
+function fetchHeroClass(heroes) {
+
+    const selectClass = document.getElementById("heroes-select");
+    
+    //récupère les différentes classes en excluant les non définis
+    const classes = [...new Set(heroes.map(hero => hero.cardClass).filter(Boolean))].sort();
+
+    classes.forEach(classe => {
+        const option = document.createElement("option");
+        option.value = classe;
+        option.textContent = classe.charAt(0) + classe.slice(1).toLowerCase();
+        selectClass.appendChild(option);
+    })
+
+    selectClass.addEventListener("change", async (event) => {
+        const selectedClasse = event.target.value;
+
+        if (selectedClasse === "all") {
+            filteredHeroesClass = allHeroes;
+        } else {
+            filteredHeroesClass = allHeroes.filter(hero => hero.cardClass === selectedClasse);
+        }
+        updateHeroDisplay();
+    });
+}
+
+// Fonction pour afficher les héros dans le DOM
+function displayHeroes(heroes) {
+    const heroesList = document.getElementById('heroes-list');
+    heroesList.innerHTML = '';  // Effacer le contenu précédent
+
+    // Parcourir les héros et créer un élément pour chaque carte
+    heroes.forEach(hero => {
+
+        // Récupérer l'ID du héros
+        const heroId = hero.id;
+        
+        // Construire l'URL de l'image en utilisant l'ID du héros et la résolution souhaitée
+        const imageUrl = `https://art.hearthstonejson.com/v1/render/latest/enUS/512x/${heroId}.png`; // Vous pouvez changer la résolution ici (512x ou 256x)
+        
+        // Créer un div pour chaque héros
+        const heroDiv = document.createElement('div');
+        heroDiv.classList.add('hero');
+        
+        // Ajouter l'image du héros
+        const heroImage = `<img src="${imageUrl}" alt="${hero.name}">`;
+        
+        // Ajouter les informations du héros
+        const heroContent = `
+            ${heroImage}
+        `;
+        
+        // Ajouter le contenu à l'élément heroDiv
+        heroDiv.innerHTML = heroContent;
+        
+        // Ajouter le héros à la liste
+        heroesList.appendChild(heroDiv);
+    });
+}
+
+function updateHeroDisplay() {
+    // Calculer l'intersection des filtres en utilisant un Set pour éviter les doublons
+    const intersection = allHeroes.filter(hero => filteredHeroesClass.includes(hero));
+
+    // Afficher les héros
+    displayHeroes([...new Set(intersection)]);
+}
+
 fetchCards();
+
+fetchHeroes();
+
